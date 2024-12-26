@@ -20,7 +20,7 @@ const Insert= () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("https://new2att.onrender.com/create-record", formData);
+      const response = await axios.post("https://back-ajnk.onrender.com/create-record", formData);
       setMessage(response.data.message);
       setFormData({ email: "", username: "", password: "" }); // Reset form fields
     } catch (err) {

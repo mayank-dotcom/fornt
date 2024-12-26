@@ -42,7 +42,7 @@ const AttendanceHistory = () => {
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://new2att.onrender.com/attendance", config);
+      const response = await axios.get("https://back-ajnk.onrender.com/attendance", config);
       console.log('Attendance data:', response.data);
       setAttendanceData(response.data);
       setFilteredData(response.data);
@@ -100,7 +100,7 @@ const AttendanceHistory = () => {
 
       if (formattedDate === todayDate) {
         try {
-          const response = await axios.post("https://new2att.onrender.com/attendance/new", {
+          const response = await axios.post("https://back-ajnk.onrender.com/attendance/new", {
             date: formattedDate,
             clockIn: newAttendance.clockIn,
             report: newAttendance.report,
@@ -124,7 +124,7 @@ const AttendanceHistory = () => {
 
   const handleEditSubmit = async (rowId, rowData) => {
     try {
-      await axios.put('https://new2att.onrender.com/attendance/update', {
+      await axios.put('https://back-ajnk.onrender.com/attendance/update', {
         id: rowId,
         clockIn: rowData.IN,
         report: rowData.report

@@ -38,7 +38,7 @@ function Admintable() {
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://new2att.onrender.com/attendance", {
+      const response = await axios.get("https://back-ajnk.onrender.com/attendance", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -129,7 +129,7 @@ function Admintable() {
   const handleUpdate = async (id) => {
     try {
       const response = await axios.put(
-        "https://new2att.onrender.com/attendance/update",
+        "https://back-ajnk.onrender.com/attendance/update",
         {
           id,
           date: editForm.date,
@@ -158,7 +158,7 @@ function Admintable() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        await axios.delete(`https://new2att.onrender.com/delete-record/${id}`, {
+        await axios.delete(`https://back-ajnk.onrender.com/delete-record/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -178,7 +178,7 @@ function Admintable() {
   const handleVerify = async (id) => {
     try {
       await axios.put(
-        "https://new2att.onrender.com/attendance/update",
+        "https://back-ajnk.onrender.com/attendance/update",
         { id, verification: "verified" },
         {
           headers: {
