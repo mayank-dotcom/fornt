@@ -391,14 +391,14 @@ function Admintable() {
                                 onClick={() => handleEdit(record)}
                                 title="Edit"
                               >
-                                <i className="bi bi-pencil"></i>
+                                Edit
                               </button>
                               <button
                                 className="btn btn-outline-danger"
                                 onClick={() => handleDelete(record._id)}
                                 title="Delete"
                               >
-                                <i className="bi bi-trash"></i>
+                                Delete
                               </button>
                               {record.verification === "pending" && (
                                 <button
@@ -406,7 +406,7 @@ function Admintable() {
                                   onClick={() => handleVerify(record._id)}
                                   title="Verify"
                                 >
-                                  <i className="bi bi-check-circle"></i>
+                                  Verify
                                 </button>
                               )}
                             </div>
