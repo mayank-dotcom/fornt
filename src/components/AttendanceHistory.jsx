@@ -64,7 +64,22 @@ const AttendanceHistory = () => {
       setLoading(false);
     }
   };
-
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let h = 0; h <= 8; h++) {
+      for (let m = 0; m < 60; m += 15) { // Increment by 15 minutes
+        const hour = h.toString().padStart(2, "0");
+        const minute = m.toString().padStart(2, "0");
+        options.push(
+          <option key={`${hour}:${minute}`} value={`${hour}:${minute}`}>
+            {hour}:{minute}
+          </option>
+        );
+      }
+    }
+    return options;
+  };
+  
   const handleNewAttendanceChange = (field, value) => {
     setNewAttendance({ ...newAttendance, [field]: value });
   };
@@ -198,13 +213,14 @@ const AttendanceHistory = () => {
           </div>
           <div className="mb-3">
             <label className="form-label">Duration:</label>
-            <input
+            <select
               type="time"
                step="60"
+                 max="08:00"
               className="form-control"
               value={newAttendance.clockIn}
               onChange={(e) => handleNewAttendanceChange("clockIn", e.target.value)}
-            />
+            > {generateTimeOptions()}</select>
           </div>
           <div className="mb-3">
             <label className="form-label">Report:</label>
@@ -258,14 +274,14 @@ const AttendanceHistory = () => {
                     <td>{new Date(row.date).toLocaleDateString()}</td>
                     <td>{row.day}</td>
                     <td>
-                      <input
-                        type="time"
-                         step="60"
-                        value={row.IN || ""}
-                        disabled={!isEditable(row.date)}
-                        onChange={(e) => handleTimeChange(index, "IN", e.target.value)}
-                        className="form-control"
-                      />
+                    <select
+  className="form-control"
+  value={row.IN || ""}
+  disabled={!isEditable(row.date)}
+  onChange={(e) => handleTimeChange(index, "IN", e.target.value)}
+>
+  {generateTimeOptions()}
+</select>
                     </td>
                     <td>
                       <textarea
