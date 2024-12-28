@@ -200,6 +200,7 @@ const AttendanceHistory = () => {
             <label className="form-label">Duration:</label>
             <input
               type="time"
+               step="60"
               className="form-control"
               value={newAttendance.clockIn}
               onChange={(e) => handleNewAttendanceChange("clockIn", e.target.value)}
@@ -259,6 +260,7 @@ const AttendanceHistory = () => {
                     <td>
                       <input
                         type="time"
+                         step="60"
                         value={row.IN || ""}
                         disabled={!isEditable(row.date)}
                         onChange={(e) => handleTimeChange(index, "IN", e.target.value)}
