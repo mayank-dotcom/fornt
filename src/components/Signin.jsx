@@ -29,8 +29,8 @@ function Signin() {
 
   return (
     <div id="form_cont">
+        <div className="heading"><p>Log In</p></div>
         <div className="card">
-          <div className="card-header">Log In</div>
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="exampleInputEmail1" className="form-label">
