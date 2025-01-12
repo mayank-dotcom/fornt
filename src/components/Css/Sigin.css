@@ -1,4 +1,4 @@
-.signin-container {
+/* .signin-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,4 +78,46 @@
     }
   }
   
+   */
+
+   #form_cont {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+   }
+
+   #form_cont .card {
+    width: 40%;
+    margin: auto;
+    margin-top: 10%;
+    padding: 10px 10px 20px 10px;
+    align-self: center;
+  }
   
+  
+  @media (max-width:1000px) {
+    #form_cont .card {
+      width: 80%;
+      margin-top: 20%;
+    }
+  }
+  
+  @media (max-width:800px) {
+    #form_cont .card {
+      width: 80%;
+      margin-top: 20%;
+    }
+  }
+  
+  
+  @media (max-width:500px) {
+    #form_cont .card {
+      margin-top: 40%;
+    }
+  }
+  @media (max-width:350px) {
+    #form_cont .card {
+      margin-top: 60%;
+    }
+  }
