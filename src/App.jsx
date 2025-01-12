@@ -21,7 +21,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-                      <Route path="/Insert" element={<Insert/>}/>
+        <Route path="/Insert" element={<Insert/>}/>
 
       </Routes>
     </BrowserRouter>

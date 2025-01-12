@@ -24,7 +24,7 @@
 //       navigate('/login');
 //       return;
 //     }
-    
+
 //     console.log('Current token:', token);
 //     try {
 //       const decoded = JSON.parse(atob(token.split('.')[1]));
@@ -53,7 +53,7 @@
 //         data: err.response?.data,
 //         headers: err.response?.headers
 //       });
-      
+
 //       if (err.response?.status === 401) {
 //         setError("Your session has expired. Please login again.");
 //         navigate('/login');
@@ -79,7 +79,7 @@
 //     }
 //     return options;
 //   };
-  
+
 //   const handleNewAttendanceChange = (field, value) => {
 //     setNewAttendance({ ...newAttendance, [field]: value });
 //   };
@@ -88,7 +88,7 @@
 //     const updatedData = [...attendanceData];
 //     updatedData[index][field] = value;
 //     setAttendanceData(updatedData);
-    
+
 //     if (filterDate) {
 //       const updatedFiltered = updatedData.filter((row) => {
 //         const recordDate = new Date(row.date).toISOString().split("T")[0];
@@ -144,7 +144,7 @@
 //         clockIn: rowData.IN,
 //         report: rowData.report
 //       }, config);
-      
+
 //       await fetchAttendanceData();
 //       alert("Changes saved successfully!");
 //     } catch (err) {
@@ -196,7 +196,7 @@
 //   return (
 //     <div className="container mt-5">
 //       <h2 className="mb-4">Attendance History for {username}</h2>
-      
+
 //       <div className="card mb-4">
 //         <div className="card-header">
 //           <h4>Mark Attendance</h4>
@@ -232,8 +232,8 @@
 //               rows="3"
 //             />
 //           </div>
-//           <button 
-//             className="btn btn-primary" 
+//           <button
+//             className="btn btn-primary"
 //             onClick={handleSubmit}
 //             disabled={!newAttendance.date || !newAttendance.clockIn}
 //           >
@@ -300,7 +300,7 @@
 //                     </td>
 //                     <td>
 //                       {isEditable(row.date) && (
-//                         <button 
+//                         <button
 //                           className="btn btn-primary btn-sm"
 //                           onClick={() => handleEditSubmit(row._id, row)}
 //                         >
@@ -327,50 +327,57 @@
 // export default AttendanceHistory;
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const AttendanceHistory = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [filterDate, setFilterDate] = useState("");
-  const [newAttendance, setNewAttendance] = useState({ date: "", clockIn: "", report: "" });
+  const [newAttendance, setNewAttendance] = useState({
+    date: "",
+    clockIn: "",
+    report: "",
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('token');
-  const decodedToken = token ? JSON.parse(atob(token.split('.')[1])) : null;
+  const token = localStorage.getItem("token");
+  const decodedToken = token ? JSON.parse(atob(token.split(".")[1])) : null;
   const username = decodedToken?.username;
 
   const config = {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   };
 
   useEffect(() => {
     if (!token) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
-    
-    console.log('Current token:', token);
+
+    console.log("Current token:", token);
     try {
-      const decoded = JSON.parse(atob(token.split('.')[1]));
-      console.log('Decoded token:', decoded);
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      console.log("Decoded token:", decoded);
       if (decoded.username) {
         fetchAttendanceData();
       }
     } catch (error) {
-      console.error('Token decoding error:', error);
-      setError('Authentication error. Please login again.');
-      navigate('/login');
+      console.error("Token decoding error:", error);
+      setError("Authentication error. Please login again.");
+      navigate("/login");
     }
   }, [token, navigate]);
 
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://back-ajnk.onrender.com/attendance", config);
-      console.log('Attendance data:', response.data);
+      const response = await axios.get(
+        "https://back-ajnk.onrender.com/attendance",
+        config
+      );
+      console.log("Attendance data:", response.data);
       setAttendanceData(response.data);
       setFilteredData(response.data);
       setError(null);
@@ -378,12 +385,12 @@ const AttendanceHistory = () => {
       console.error("Error details:", {
         status: err.response?.status,
         data: err.response?.data,
-        headers: err.response?.headers
+        headers: err.response?.headers,
       });
-      
+
       if (err.response?.status === 401) {
         setError("Your session has expired. Please login again.");
-        navigate('/login');
+        navigate("/login");
       } else {
         setError("Failed to fetch attendance data. Please try again later.");
       }
@@ -394,7 +401,8 @@ const AttendanceHistory = () => {
   const generateTimeOptions = () => {
     const options = [];
     for (let h = 0; h <= 8; h++) {
-      for (let m = 0; m < 60; m += 15) { // Increment by 15 minutes
+      for (let m = 0; m < 60; m += 15) {
+        // Increment by 15 minutes
         const hour = h.toString().padStart(2, "0");
         const minute = m.toString().padStart(2, "0");
         options.push(
@@ -406,7 +414,7 @@ const AttendanceHistory = () => {
     }
     return options;
   };
-  
+
   const handleNewAttendanceChange = (field, value) => {
     setNewAttendance({ ...newAttendance, [field]: value });
   };
@@ -415,7 +423,7 @@ const AttendanceHistory = () => {
     const updatedData = [...attendanceData];
     updatedData[index][field] = value;
     setAttendanceData(updatedData);
-    
+
     if (filterDate) {
       const updatedFiltered = updatedData.filter((row) => {
         const recordDate = new Date(row.date).toISOString().split("T")[0];
@@ -434,7 +442,9 @@ const AttendanceHistory = () => {
     }
 
     if (newAttendance.date && newAttendance.clockIn) {
-      const formattedDate = new Date(newAttendance.date).toLocaleDateString("en-CA");
+      const formattedDate = new Date(newAttendance.date).toLocaleDateString(
+        "en-CA"
+      );
       const todayDate = new Date().toLocaleDateString("en-CA");
 
       console.log("Formatted Date (Local):", formattedDate);
@@ -442,22 +452,31 @@ const AttendanceHistory = () => {
 
       if (formattedDate === todayDate) {
         try {
-          const response = await axios.post("https://back-ajnk.onrender.com/attendance/new", {
-            date: formattedDate,
-            clockIn: newAttendance.clockIn,
-            report: newAttendance.report,
-          }, config);
+          const response = await axios.post(
+            "https://back-ajnk.onrender.com/attendance/new",
+            {
+              date: formattedDate,
+              clockIn: newAttendance.clockIn,
+              report: newAttendance.report,
+            },
+            config
+          );
 
-          console.log('Attendance submission response:', response.data);
+          console.log("Attendance submission response:", response.data);
           setNewAttendance({ date: "", clockIn: "", report: "" });
           await fetchAttendanceData();
           alert("Attendance submitted successfully!");
         } catch (err) {
           console.error("Error adding new attendance:", err);
-          setError("Failed to submit attendance: " + (err.response?.data?.message || err.message));
+          setError(
+            "Failed to submit attendance: " +
+              (err.response?.data?.message || err.message)
+          );
         }
       } else {
-        setError(`You can only mark attendance for today.\nSelected Date: ${formattedDate}\nToday's Date: ${todayDate}`);
+        setError(
+          `You can only mark attendance for today.\nSelected Date: ${formattedDate}\nToday's Date: ${todayDate}`
+        );
       }
     } else {
       setError("Please fill in all required fields.");
@@ -466,12 +485,16 @@ const AttendanceHistory = () => {
 
   const handleEditSubmit = async (rowId, rowData) => {
     try {
-      await axios.put('https://back-ajnk.onrender.com/attendance/update', {
-        id: rowId,
-        clockIn: rowData.IN,
-        report: rowData.report
-      }, config);
-      
+      await axios.put(
+        "https://back-ajnk.onrender.com/attendance/update",
+        {
+          id: rowId,
+          clockIn: rowData.IN,
+          report: rowData.report,
+        },
+        config
+      );
+
       await fetchAttendanceData();
       alert("Changes saved successfully!");
     } catch (err) {
@@ -513,14 +536,14 @@ const AttendanceHistory = () => {
   //     day: '2-digit'
   //   });
   // };
-  
-const formatDateToIST = (dateString) => {
-  const date = new Date(dateString);
-  // Subtract 5 hours and 30 minutes to adjust for IST
-  date.setHours(date.getHours() - 5);
-  date.setMinutes(date.getMinutes() - 30);
-  return date.toLocaleDateString();
-};
+
+  const formatDateToIST = (dateString) => {
+    const date = new Date(dateString);
+    // Subtract 5 hours and 30 minutes to adjust for IST
+    date.setHours(date.getHours() - 5);
+    date.setMinutes(date.getMinutes() - 30);
+    return date.toLocaleDateString();
+  };
 
   if (loading) {
     return <div className="container mt-5">Loading...</div>;
@@ -535,13 +558,17 @@ const formatDateToIST = (dateString) => {
   }
 
   if (!username) {
-    return <div className="container mt-5">Please log in to view attendance history.</div>;
+    return (
+      <div className="container mt-5">
+        Please log in to view attendance history.
+      </div>
+    );
   }
 
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Attendance History for {username}</h2>
-      
+
       <div className="card mb-4">
         <div className="card-header">
           <h4>Mark Attendance</h4>
@@ -553,32 +580,41 @@ const formatDateToIST = (dateString) => {
               type="date"
               className="form-control"
               value={newAttendance.date}
-              onChange={(e) => handleNewAttendanceChange("date", e.target.value)}
+              onChange={(e) =>
+                handleNewAttendanceChange("date", e.target.value)
+              }
             />
           </div>
           <div className="mb-3">
             <label className="form-label">Duration:</label>
             <select
               type="time"
-               step="60"
-                 max="08:00"
+              step="60"
+              max="08:00"
               className="form-control"
               value={newAttendance.clockIn}
-              onChange={(e) => handleNewAttendanceChange("clockIn", e.target.value)}
-            > {generateTimeOptions()}</select>
+              onChange={(e) =>
+                handleNewAttendanceChange("clockIn", e.target.value)
+              }
+            >
+              {" "}
+              {generateTimeOptions()}
+            </select>
           </div>
           <div className="mb-3">
             <label className="form-label">Report:</label>
             <textarea
               className="form-control"
               value={newAttendance.report}
-              onChange={(e) => handleNewAttendanceChange("report", e.target.value)}
+              onChange={(e) =>
+                handleNewAttendanceChange("report", e.target.value)
+              }
               placeholder="Enter your daily report"
               rows="3"
             />
           </div>
-          <button 
-            className="btn btn-primary" 
+          <button
+            className="btn btn-primary"
             onClick={handleSubmit}
             disabled={!newAttendance.date || !newAttendance.clockIn}
           >
@@ -601,69 +637,92 @@ const formatDateToIST = (dateString) => {
           </div>
         </div>
         <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Date</th>
-                  <th>Day</th>
-                  <th>Duration</th>
-                  <th>Report</th>
-                  <th>Verification Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((row, index) => (
-                  <tr key={index}>
-                    <td>{formatDateToIST(row.date)}</td>
-                    <td>{row.day}</td>
-                    <td>
-                    <select
-  className="form-control"
-  value={row.IN || ""}
-  disabled={!isEditable(row.date)}
-  onChange={(e) => handleTimeChange(index, "IN", e.target.value)}
->
-  {generateTimeOptions()}
-</select>
-                    </td>
-                    <td>
-                      <textarea
-                        value={row.report || ""}
-                        disabled={!isEditable(row.date)}
-                        onChange={(e) => handleTimeChange(index, "report", e.target.value)}
-                        placeholder="Enter report"
-                        className="form-control"
-                        rows="2"
-                      />
-                    </td>
-                    <td>
-                      <span className={`badge ${row.verification === 'pending' ? 'bg-warning' : 'bg-success'}`}>
-                        {row.verification || "Pending"}
-                      </span>
-                    </td>
-                    <td>
-                      {isEditable(row.date) && (
-                        <button 
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleEditSubmit(row._id, row)}
-                        >
-                          Save Changes
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {filteredData.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="text-center">No attendance records found</td>
-                  </tr>
+  <div className="table-responsive">
+    <table className="table table-bordered table-hover">
+      <thead className="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Duration</th>
+          <th>Report</th>
+          <th>Verification Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredData.map((row, index) => (
+          <tr key={index}>
+            <td>
+              <div className="d-flex align-items-start">{formatDateToIST(row.date)}</div>
+            </td>
+            <td>
+              <div className="d-flex align-items-start">{row.day}</div>
+            </td>
+            <td>
+              <div className="d-flex align-items-start">
+                <select
+                  className="form-control"
+                  value={row.IN || ""}
+                  disabled={!isEditable(row.date)}
+                  onChange={(e) => handleTimeChange(index, "IN", e.target.value)}
+                >
+                  {generateTimeOptions()}
+                </select>
+              </div>
+            </td>
+            <td>
+              <div className="d-flex align-items-start">
+                <textarea
+                  value={row.report || ""}
+                  disabled={!isEditable(row.date)}
+                  onChange={(e) => {
+                    handleTimeChange(index, "report", e.target.value)
+                    e.target.style.height = 'auto'; 
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  placeholder="Enter report"
+                  className="form-control" 
+                  style={{overflow:'hidden', maxHeight:'200px'}}
+                  rows="1"
+                />
+              </div>
+            </td>
+            <td>
+              <div className="d-flex align-items-start justify-content-center">
+                <span
+                  className={`badge ${row.verification === "pending" ? "bg-warning" : "bg-success"}`}
+                  style={{ padding: '7px 20px', fontWeight: 300, fontSize: '1em' }} // Adjust padding and font size
+                >
+                  {row.verification || "Pending"}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div className="d-flex align-items-start">
+                {isEditable(row.date) && (
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={() => handleEditSubmit(row._id, row)}
+                  >
+                    Save Changes
+                  </button>
                 )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </div>
+            </td>
+          </tr>
+        ))}
+        {filteredData.length === 0 && (
+          <tr>
+            <td colSpan="6" className="text-center">
+              No attendance records found
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+
       </div>
     </div>
   );
