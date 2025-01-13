@@ -433,10 +433,13 @@
 // }
 
 // export default Admintable;
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
 import { Link } from "react-router-dom";
+import './Css/Admintable.css';
 
 function Admintable() {
   // State management
@@ -656,9 +659,9 @@ function Admintable() {
   return (
     <div className="min-vh-100 bg-light d-flex flex-column">
       <Header />
-      <div className="container-fluid py-4">
+      <div className="container-fluid py-4" id="main-cont">
         {/* Top Section */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div id="head-cont" className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="mb-0">Attendance Management</h2>
           <Link to="/Insert" className="btn btn-primary shadow-sm">
             <i className="bi bi-plus-lg me-2"></i>Add New Record
@@ -666,7 +669,7 @@ function Admintable() {
         </div>
 
         {/* Filter Section */}
-        <div className="card shadow-sm border-0 mb-4">
+        <div className="card shadow-sm border-1 mb-4">
           <div className="card-body">
             <h5 className="card-title mb-3">Filters</h5>
             <div className="row g-3">
@@ -707,11 +710,11 @@ function Admintable() {
         </div>
 
         {/* Table Section */}
-        <div className="card shadow-lg border-0">
+        <div className="card shadow-lg border-2">
           <div className="card-body p-0">
             <div className="table-responsive">
               <table className="table table-hover mb-0">
-                <thead className="table-dark">
+                <thead className="table-dark align-baseline">
                   <tr>
                     <th>Name</th>
                     <th>Date</th>
@@ -726,7 +729,7 @@ function Admintable() {
                   {filteredData.length > 0 ? (
                     filteredData.map((record) => (
                       <tr key={record._id}>
-                        <td>{record.name}</td>
+                        <td><p style={{width:'150px'}}>{record.name}</p></td>
                         <td>
                           {editingId === record._id ? (
                             <input
@@ -785,7 +788,8 @@ function Admintable() {
                                 record.verification === "verified"
                                   ? "bg-success"
                                   : "bg-warning text-dark"
-                              }`}
+                              }` }
+                              style={{ width:'85px', fontWeight: 300, fontSize: '16px' }}
                             >
                               {record.verification}
                             </span>
@@ -806,7 +810,7 @@ function Admintable() {
                         </td>
                         <td>
                           {editingId === record._id ? (
-                            <div className="btn-group btn-group-sm">
+                            <div className="btn-group btn-group-sm" style={{gap:'5px'}}>
                               <button
                                 className="btn btn-success"
                                 onClick={() => handleUpdate(record._id)}
@@ -821,16 +825,17 @@ function Admintable() {
                               </button>
                             </div>
                           ) : (
-                            <div className="btn-group btn-group-sm">
+                            <div className="btn-group btn-group-sm" style={{gap:'5px'}}>
                               <button
-                                className="btn btn-outline-primary"
+                                className="btn btn-primary"
+                                style={{background:'light-blue'}}
                                 onClick={() => handleEdit(record)}
                                 title="Edit"
                               >
                                 Edit
                               </button>
                               <button
-                                className="btn btn-outline-danger"
+                                className="btn btn-danger"
                                 onClick={() => handleDelete(record._id)}
                                 title="Delete"
                               >
@@ -838,7 +843,7 @@ function Admintable() {
                               </button>
                               {record.verification === "pending" && (
                                 <button
-                                  className="btn btn-outline-success"
+                                  className="btn btn-success"
                                   onClick={() => handleVerify(record._id)}
                                   title="Verify"
                                 >
