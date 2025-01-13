@@ -1,0 +1,16 @@
+#main-cont {
+    width: 90%;
+}
+
+@media (max-width:600px) {
+    #main-cont {
+        width: 100%;
+    }
+}
+
+@media (max-width:350px) {
+    #head-cont {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
