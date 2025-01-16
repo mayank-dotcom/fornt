@@ -9,12 +9,12 @@
 //   const [editingId, setEditingId] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-  
+
 //   // Filter states
 //   const [nameFilter, setNameFilter] = useState("");
 //   const [startDate, setStartDate] = useState("");
 //   const [filteredData, setFilteredData] = useState([]);
-  
+
 //   // Edit form state
 //   const [editForm, setEditForm] = useState({
 //     date: "",
@@ -60,7 +60,7 @@
 
 //     // Apply name filter
 //     if (nameFilter) {
-//       filtered = filtered.filter(record => 
+//       filtered = filtered.filter(record =>
 //         record.name.toLowerCase().includes(nameFilter.toLowerCase())
 //       );
 //     }
@@ -163,8 +163,8 @@
 //             Authorization: `Bearer ${localStorage.getItem("token")}`,
 //           },
 //         });
-        
-//         setAttendanceData(prevData => 
+
+//         setAttendanceData(prevData =>
 //           prevData.filter((record) => record._id !== id)
 //         );
 //       } catch (error) {
@@ -186,7 +186,7 @@
 //           },
 //         }
 //       );
-      
+
 //       setAttendanceData(prevData =>
 //         prevData.map((record) =>
 //           record._id === id ? { ...record, verification: "verified" } : record
@@ -255,7 +255,7 @@
 //                 />
 //               </div>
 //               <div className="col-md-4 d-flex align-items-end">
-//                 <button 
+//                 <button
 //                   className="btn btn-outline-secondary"
 //                   onClick={clearFilters}
 //                 >
@@ -434,12 +434,12 @@
 
 // export default Admintable;
 
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "./Header";
 import { Link } from "react-router-dom";
-import './Css/Admintable.css';
+import "./Css/Admintable.css";
+// import { createLogger } from "vite";
 
 function Admintable() {
   // State management
@@ -447,19 +447,20 @@ function Admintable() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filter states
   const [nameFilter, setNameFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  
+
   // Edit form state
   const [editForm, setEditForm] = useState({
     date: "",
     day: "",
     IN: "",
     report: "",
-    verification: ""
+    verified_report: "",
+    verification: "",
   });
 
   // Fetch data on component mount
@@ -498,7 +499,7 @@ function Admintable() {
 
     // Apply name filter
     if (nameFilter) {
-      filtered = filtered.filter(record => 
+      filtered = filtered.filter((record) =>
         record.name.toLowerCase().includes(nameFilter.toLowerCase())
       );
     }
@@ -508,7 +509,7 @@ function Admintable() {
       const filterStartDate = new Date(startDate);
       filterStartDate.setHours(0, 0, 0, 0);
 
-      filtered = filtered.filter(record => {
+      filtered = filtered.filter((record) => {
         const recordDate = new Date(record.date);
         return recordDate >= filterStartDate;
       });
@@ -525,12 +526,16 @@ function Admintable() {
   // Edit handlers
   const handleEdit = (record) => {
     setEditingId(record._id);
+    const date_value = record.date.split('T')[0];
+    console.log(record.date, " - ", date_value);
+
     setEditForm({
-      date: new Date(record.date).toISOString().split('T')[0],
+      date: date_value,
       day: record.day,
       IN: record.IN || "",
       report: record.report || "",
-      verification: record.verification
+      verified_report: record.verified_report || "",
+      verification: record.verification,
     });
   };
 
@@ -541,24 +546,25 @@ function Admintable() {
       day: "",
       IN: "",
       report: "",
-      verification: ""
+      verified_report: "",
+      verification: "",
     });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditForm(prev => ({
+    setEditForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Update day automatically when date changes
     if (name === "date") {
       const newDate = new Date(value);
       const day = newDate.toLocaleString("en-US", { weekday: "long" });
-      setEditForm(prev => ({
+      setEditForm((prev) => ({
         ...prev,
-        day: day
+        day: day,
       }));
     }
   };
@@ -573,7 +579,8 @@ function Admintable() {
           date: editForm.date,
           clockIn: editForm.IN,
           report: editForm.report,
-          verification: editForm.verification
+          verified_report: editForm.verified_report,
+          verification: editForm.verification,
         },
         {
           headers: {
@@ -601,8 +608,8 @@ function Admintable() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        
-        setAttendanceData(prevData => 
+
+        setAttendanceData((prevData) =>
           prevData.filter((record) => record._id !== id)
         );
       } catch (error) {
@@ -624,8 +631,8 @@ function Admintable() {
           },
         }
       );
-      
-      setAttendanceData(prevData =>
+
+      setAttendanceData((prevData) =>
         prevData.map((record) =>
           record._id === id ? { ...record, verification: "verified" } : record
         )
@@ -661,7 +668,10 @@ function Admintable() {
       <Header />
       <div className="container-fluid py-4" id="main-cont">
         {/* Top Section */}
-        <div id="head-cont" className="d-flex justify-content-between align-items-center mb-4">
+        <div
+          id="head-cont"
+          className="d-flex justify-content-between align-items-center mb-4"
+        >
           <h2 className="mb-0">Attendance Management</h2>
           <Link to="/Insert" className="btn btn-primary shadow-sm">
             <i className="bi bi-plus-lg me-2"></i>Add New Record
@@ -693,7 +703,7 @@ function Admintable() {
                 />
               </div>
               <div className="col-md-4 d-flex align-items-end">
-                <button 
+                <button
                   className="btn btn-outline-secondary"
                   onClick={clearFilters}
                 >
@@ -722,6 +732,7 @@ function Admintable() {
                     <th>Duration</th>
                     <th>Verification Status</th>
                     <th>Report</th>
+                    <th>Verified Report</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -729,7 +740,9 @@ function Admintable() {
                   {filteredData.length > 0 ? (
                     filteredData.map((record) => (
                       <tr key={record._id}>
-                        <td><p style={{width:'150px'}}>{record.name}</p></td>
+                        <td>
+                          <p style={{ width: "150px" }}>{record.name}</p>
+                        </td>
                         <td>
                           {editingId === record._id ? (
                             <input
@@ -740,8 +753,7 @@ function Admintable() {
                               onChange={handleInputChange}
                             />
                           ) : (
-                            new Date(new Date(record.date).getTime() - (24 * 60 * 60 * 1000))
-                              .toLocaleDateString('en-IN')
+                              new Date(record.date.split('T')[0]).toLocaleDateString("en-IN")
                           )}
                         </td>
                         <td>
@@ -788,8 +800,12 @@ function Admintable() {
                                 record.verification === "verified"
                                   ? "bg-success"
                                   : "bg-warning text-dark"
-                              }` }
-                              style={{ width:'85px', fontWeight: 300, fontSize: '16px' }}
+                              }`}
+                              style={{
+                                width: "85px",
+                                fontWeight: 300,
+                                fontSize: "16px",
+                              }}
                             >
                               {record.verification}
                             </span>
@@ -810,7 +826,23 @@ function Admintable() {
                         </td>
                         <td>
                           {editingId === record._id ? (
-                            <div className="btn-group btn-group-sm" style={{gap:'5px'}}>
+                            <input
+                              type="text"
+                              className="form-control form-control-sm"
+                              name="verified_report"
+                              value={editForm.verified_report}
+                              onChange={handleInputChange}
+                            />
+                          ) : (
+                            record.verified_report
+                          )}
+                        </td>
+                        <td>
+                          {editingId === record._id ? (
+                            <div
+                              className="btn-group btn-group-sm"
+                              style={{ gap: "5px" }}
+                            >
                               <button
                                 className="btn btn-success"
                                 onClick={() => handleUpdate(record._id)}
@@ -825,10 +857,13 @@ function Admintable() {
                               </button>
                             </div>
                           ) : (
-                            <div className="btn-group btn-group-sm" style={{gap:'5px'}}>
+                            <div
+                              className="btn-group btn-group-sm"
+                              style={{ gap: "5px" }}
+                            >
                               <button
                                 className="btn btn-primary"
-                                style={{background:'light-blue'}}
+                                style={{ background: "light-blue" }}
                                 onClick={() => handleEdit(record)}
                                 title="Edit"
                               >
