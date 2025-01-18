@@ -425,7 +425,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 
-
 const AttendanceForm = () => {
   const [newAttendance, setNewAttendance] = useState({
     date: "",
@@ -815,8 +814,8 @@ const AttendanceForm = () => {
                           e.target.style.height = `${e.target.scrollHeight}px`;
                         }}
                         placeholder="Enter report"
-                        className="form-control  overflow-hidden min-w-[150px] transition-all duration-200 ease-in-out"
-                        style={{resize: "vertical"}}
+                        className="form-control"
+                        style={{resize: "vertical", width: "200px", margin: "0 auto", scrollBehavior:"auto"}}
                         row={1}
                       />
                     </div>

@@ -442,18 +442,13 @@ import "./Css/Admintable.css";
 // import { createLogger } from "vite";
 
 function Admintable() {
-  // State management
   const [attendanceData, setAttendanceData] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Filter states
   const [nameFilter, setNameFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-
-  // Edit form state
   const [editForm, setEditForm] = useState({
     date: "",
     day: "",
@@ -462,26 +457,57 @@ function Admintable() {
     verified_report: "",
     verification: "",
   });
+  const [showPopup_report, setShowPopup_report] = useState(false);
+  const [showPopup_verifiedreport, setShowPopup_verifiedreport] = useState(false);
+  const [popupData, setPopupData] = useState(null);
 
-  // Fetch data on component mount
   useEffect(() => {
     fetchAttendanceData();
   }, []);
 
-  // Filter effect
   useEffect(() => {
     filterData();
   }, [attendanceData, nameFilter, startDate]);
 
-  // Data fetching function
+  useEffect(() => {
+    // Function to prevent scrolling
+    const preventScroll = (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // Stop event bubbling
+      return false;
+    };
+
+    if (showPopup_report || showPopup_verifiedreport) {
+      // Add event listeners to prevent scrolling
+      window.addEventListener("wheel", preventScroll, { passive: false }); // Modern browsers
+      window.addEventListener("touchmove", preventScroll, { passive: false }); // For touch devices
+      document.body.style.overflow = "hidden"; // fallback for some cases
+    } else {
+      // Remove event listeners
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function to remove listeners when component unmounts or state changes
+    return () => {
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+      document.body.style.overflow = "unset";
+    };
+  }, [showPopup_report, showPopup_verifiedreport]);
+
   const fetchAttendanceData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://back-ajnk.onrender.com/attendance", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await axios.get(
+        "https://back-ajnk.onrender.com/attendance",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       setAttendanceData(response.data);
       setFilteredData(response.data);
       setError(null);
@@ -493,18 +519,15 @@ function Admintable() {
     }
   };
 
-  // Filter function
   const filterData = () => {
     let filtered = [...attendanceData];
 
-    // Apply name filter
     if (nameFilter) {
       filtered = filtered.filter((record) =>
         record.name.toLowerCase().includes(nameFilter.toLowerCase())
       );
     }
 
-    // Apply date filter
     if (startDate) {
       const filterStartDate = new Date(startDate);
       filterStartDate.setHours(0, 0, 0, 0);
@@ -523,11 +546,9 @@ function Admintable() {
     setStartDate("");
   };
 
-  // Edit handlers
   const handleEdit = (record) => {
     setEditingId(record._id);
-    const date_value = record.date.split('T')[0];
-    console.log(record.date, " - ", date_value);
+    const date_value = record.date.split("T")[0];
 
     setEditForm({
       date: date_value,
@@ -558,7 +579,6 @@ function Admintable() {
       [name]: value,
     }));
 
-    // Update day automatically when date changes
     if (name === "date") {
       const newDate = new Date(value);
       const day = newDate.toLocaleString("en-US", { weekday: "long" });
@@ -569,7 +589,6 @@ function Admintable() {
     }
   };
 
-  // Update handler
   const handleUpdate = async (id) => {
     try {
       const response = await axios.put(
@@ -599,15 +618,17 @@ function Admintable() {
     }
   };
 
-  // Delete handler
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        await axios.delete(`https://back-ajnk.onrender.com/delete-record/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        await axios.delete(
+          `https://back-ajnk.onrender.com/delete-record/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
 
         setAttendanceData((prevData) =>
           prevData.filter((record) => record._id !== id)
@@ -619,7 +640,6 @@ function Admintable() {
     }
   };
 
-  // Verify handler
   const handleVerify = async (id) => {
     try {
       await axios.put(
@@ -641,6 +661,22 @@ function Admintable() {
       console.error("Error verifying record:", error);
       alert("Failed to verify record. Please try again.");
     }
+  };
+
+  const handleButtonClick = (data, tag) => {
+    setPopupData(data);
+    if(tag) {
+      setShowPopup_report(true);
+    }else{
+      setShowPopup_verifiedreport(true);
+    }
+    console.log("data is from", data.name);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup_report(false);
+    setShowPopup_verifiedreport(false);
+    setPopupData(null);
   };
 
   if (loading) {
@@ -667,7 +703,6 @@ function Admintable() {
     <div className="min-vh-100 bg-light d-flex flex-column">
       <Header />
       <div className="container-fluid py-4" id="main-cont">
-        {/* Top Section */}
         <div
           id="head-cont"
           className="d-flex justify-content-between align-items-center mb-4"
@@ -753,7 +788,9 @@ function Admintable() {
                               onChange={handleInputChange}
                             />
                           ) : (
-                              new Date(record.date.split('T')[0]).toLocaleDateString("en-IN")
+                            new Date(
+                              record.date.split("T")[0]
+                            ).toLocaleDateString("en-IN")
                           )}
                         </td>
                         <td>
@@ -812,37 +849,20 @@ function Admintable() {
                           )}
                         </td>
                         <td>
-                          {editingId === record._id ? (
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="report"
-                              value={editForm.report}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            record.report
-                          )}
+                          <p className="report">{record.report}</p>
+                          <p className="btn btn-link report-button" onClick={() => handleButtonClick(record, true)}>
+                            more
+                          </p>
+                        </td>
+                        <td>
+                          <p className="report verified">{record.verified_report}</p>
+                          <p className="btn btn-link report-buttton" style={{padding:"0"}} onClick={() => handleButtonClick(record, false)}>
+                            more
+                          </p>
                         </td>
                         <td>
                           {editingId === record._id ? (
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="verified_report"
-                              value={editForm.verified_report}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            record.verified_report
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <div
-                              className="btn-group btn-group-sm"
-                              style={{ gap: "5px" }}
-                            >
+                            <div className="btn-group" style={{ gap: "5px" }}>
                               <button
                                 className="btn btn-success"
                                 onClick={() => handleUpdate(record._id)}
@@ -892,7 +912,7 @@ function Admintable() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="7" className="text-center text-muted py-4">
+                      <td colSpan="8" className="text-center text-muted py-4">
                         <i className="bi bi-inbox fs-4 d-block mb-2"></i>
                         No matching records found.
                       </td>
@@ -904,6 +924,126 @@ function Admintable() {
           </div>
         </div>
       </div>
+      {showPopup_report && popupData && (
+        <div className="popup-overlay popup-container">
+          <div className="popup">
+            <div className="top">
+              <div>
+              <h2>{popupData.name}'s Report</h2>
+              <p>on {new Date(popupData.date).toLocaleDateString("en-IN")} {popupData.day}</p>
+              </div>
+              <button className="btn btn-danger" onClick={handleClosePopup}>Close</button>
+              </div>
+              <div className="middle">
+
+              {editingId === popupData._id ? (
+                <textarea
+                type="text"
+                className="form-control"
+                name="report"
+                value={editForm.report}
+                style={{maxHeight:"80%", scrollBehavior:"auto"}}
+                onChange={(e)=>{
+                  handleInputChange(e);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                />
+              ) : (
+               <p> {popupData.report}</p>
+              )}
+                  </div>
+                  <div className="bottom">
+
+              {editingId === popupData._id ? (
+                <div className="btn-group" style={{ gap: "15px" }}>
+                  <button
+                    className="btn btn-success"
+                    onClick={() => handleUpdate(popupData._id)}
+                    >
+                    <i className="bi bi-check"></i> Save
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={handleCancelEdit}
+                    >
+                    <i className="bi bi-x"></i> Cancel
+                  </button>
+                </div>
+              ) : (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleEdit(popupData)}
+                    title="Edit"
+                    >
+                    Edit
+                  </button>
+                
+              )}
+              </div>
+            
+          </div>
+        </div>
+      )}
+      {showPopup_verifiedreport && popupData && (
+        <div className="popup-overlay popup-container">
+          <div className="popup">
+              <div className="top">
+                <div>
+              <h2>{popupData.name}'s Verification Report</h2>
+              <p>on {new Date(popupData.date).toLocaleDateString("en-IN")} {popupData.day}</p>
+                </div>
+              <button className="btn btn-danger" onClick={handleClosePopup}>Close</button>
+              </div>
+              <div className="middle">
+              {editingId === popupData._id ? (
+                <textarea
+                  type="text"
+                  className="form-control form-control-sm"
+                  name="report"
+                  value={editForm.verified_report}
+                  style={{maxHeight:"80%", scrollBehavior:"auto"}}
+                onChange={(e)=>{
+                  handleInputChange(e);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                />
+              ) : (
+                <p>{popupData.verified_report}</p>
+              )}
+              </div>
+              <div className="bottom">
+              {editingId === popupData._id ? (
+                <div className="btn-group" style={{ gap: "15px" }}>
+                  <button
+                    className="btn btn-success"
+                    onClick={() => handleUpdate(popupData._id)}
+                  >
+                    <i className="bi bi-check"></i> Save
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={handleCancelEdit}
+                  >
+                    <i className="bi bi-x"></i> Cancel
+                  </button>
+                </div>
+              ) : (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleEdit(popupData)}
+                    title="Edit"
+                  >
+                    Edit
+                  </button>
+                
+              )}
+              </div>
+            
+          </div>
+        </div>
+      )}
     </div>
   );
 }
