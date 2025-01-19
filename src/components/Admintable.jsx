@@ -611,6 +611,7 @@ function Admintable() {
       if (response.status === 200) {
         setEditingId(null);
         await fetchAttendanceData();
+        handleClosePopup();
       }
     } catch (error) {
       console.error("Error updating record:", error);
@@ -767,7 +768,7 @@ function Admintable() {
                     <th>Duration</th>
                     <th>Verification Status</th>
                     <th>Report</th>
-                    <th>Verified Report</th>
+                    <th>Verification Report</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -1000,7 +1001,7 @@ function Admintable() {
                 <textarea
                   type="text"
                   className="form-control form-control-sm"
-                  name="report"
+                  name="verified_report"
                   value={editForm.verified_report}
                   style={{maxHeight:"80%", scrollBehavior:"auto"}}
                 onChange={(e)=>{

@@ -552,11 +552,14 @@ const AttendanceForm = () => {
       const formattedDate = new Date(date).toLocaleDateString("en-CA");
       const todayDate = new Date().toLocaleDateString("en-CA");
 
-      console.log("Formatted Date (Local):", formattedDate);
-      console.log("Today's Date (Local):", todayDate);
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayDate = yesterday.toLocaleDateString("en-CA");
+
+      
 
       // Ensure the attendance is marked for today
-      if (formattedDate === todayDate) {
+      if (formattedDate === todayDate || formattedDate === yesterdayDate) {
         try {
           const response = await axios.post(
             "https://back-ajnk.onrender.com/attendance/new",
@@ -586,7 +589,7 @@ const AttendanceForm = () => {
         }
       } else {
         setError(
-          `You can only mark attendance for today.\nSelected Date: ${formattedDate}\nToday's Date: ${todayDate}`
+          `You can only mark attendance for today ${todayDate} and yesterday ${yesterdayDate}. Your selected Date: ${formattedDate}`
         );
       }
     } else {
