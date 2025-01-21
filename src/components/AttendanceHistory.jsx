@@ -424,7 +424,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 const AttendanceForm = () => {
   const [newAttendance, setNewAttendance] = useState({
     date: "",
@@ -438,6 +437,8 @@ const AttendanceForm = () => {
   const navigate = useNavigate();
 
   const [error, setError] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState("");
 
   const token = localStorage.getItem("token");
   const decodedToken = token ? JSON.parse(atob(token.split(".")[1])) : null;
@@ -556,8 +557,6 @@ const AttendanceForm = () => {
       yesterday.setDate(yesterday.getDate() - 1);
       const yesterdayDate = yesterday.toLocaleDateString("en-CA");
 
-      
-
       // Ensure the attendance is marked for today
       if (formattedDate === todayDate || formattedDate === yesterdayDate) {
         try {
@@ -655,6 +654,16 @@ const AttendanceForm = () => {
     date.setHours(date.getHours() - 5);
     date.setMinutes(date.getMinutes() - 30);
     return date.toLocaleDateString();
+  };
+
+  const handleButtonClick = (report) => {
+    setShowPopup(true);
+    setPopupData(report);
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+    setPopupData(null);
   };
 
   if (loading) {
@@ -776,7 +785,8 @@ const AttendanceForm = () => {
                 <th>Day</th>
                 <th>Duration</th>
                 <th>Report</th>
-                <th>Verification Status</th>
+                <th>Status</th>
+                <th>Verification Report</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -818,7 +828,12 @@ const AttendanceForm = () => {
                         }}
                         placeholder="Enter report"
                         className="form-control"
-                        style={{resize: "vertical", width: "200px", margin: "0 auto", scrollBehavior:"auto"}}
+                        style={{
+                          resize: "vertical",
+                          width: "200px",
+                          margin: "0 auto",
+                          scrollBehavior: "auto",
+                        }}
                         row={1}
                       />
                     </div>
@@ -832,7 +847,7 @@ const AttendanceForm = () => {
                             : "bg-success"
                         }`}
                         style={{
-                          padding: "7px 20px",
+                          padding: "7px 15px",
                           fontWeight: 300,
                           fontSize: "1em",
                         }} // Adjust padding and font size
@@ -840,6 +855,15 @@ const AttendanceForm = () => {
                         {row.verification || "Pending"}
                       </span>
                     </div>
+                  </td>
+                  <td>
+                    <p className="report">{row.verified_report}</p>
+                    <button
+                      className="btn btn-link report-button"
+                      onClick={() => handleButtonClick(row)}
+                    >
+                      more
+                    </button>
                   </td>
                   <td>
                     <div className="d-flex align-items-start">
@@ -866,6 +890,27 @@ const AttendanceForm = () => {
           </table>
         </div>
       </div>
+      {showPopup && popupData && (
+        <div className="popup-overlay popup-container">
+          <div className="popup">
+            <div className="top">
+              <div>
+                <h2>Verification Report</h2>
+                <p>
+                  on {new Date(popupData.date).toLocaleDateString("en-IN")}{" "}
+                  {popupData.day}
+                </p>
+              </div>
+              <button className="btn btn-danger" onClick={handleClosePopup}>
+                Close
+              </button>
+            </div>
+            <div className="middle">
+              <p>{popupData.verified_report}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
