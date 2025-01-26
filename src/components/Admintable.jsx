@@ -1,3 +1,4 @@
+
 // import React, { useState, useEffect } from "react";
 // import axios from "axios";
 // import Header from "./Header";
@@ -302,7 +303,8 @@
 //                               onChange={handleInputChange}
 //                             />
 //                           ) : (
-//                             new Date(record.date).toLocaleDateString()
+//                             new Date(new Date(record.date).getTime() - (24 * 60 * 60 * 1000))
+//                               .toLocaleDateString('en-IN')
 //                           )}
 //                         </td>
 //                         <td>
@@ -444,19 +446,22 @@ function Admintable() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filter states
   const [nameFilter, setNameFilter] = useState("");
   const [startDate, setStartDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
-  
+
+  // Bulk attendance state
+  const [bulkFile, setBulkFile] = useState(null);
+
   // Edit form state
   const [editForm, setEditForm] = useState({
     date: "",
     day: "",
     IN: "",
     report: "",
-    verification: ""
+    verification: "",
   });
 
   // Fetch data on component mount
@@ -493,19 +498,17 @@ function Admintable() {
   const filterData = () => {
     let filtered = [...attendanceData];
 
-    // Apply name filter
     if (nameFilter) {
-      filtered = filtered.filter(record => 
+      filtered = filtered.filter((record) =>
         record.name.toLowerCase().includes(nameFilter.toLowerCase())
       );
     }
 
-    // Apply date filter
     if (startDate) {
       const filterStartDate = new Date(startDate);
       filterStartDate.setHours(0, 0, 0, 0);
 
-      filtered = filtered.filter(record => {
+      filtered = filtered.filter((record) => {
         const recordDate = new Date(record.date);
         return recordDate >= filterStartDate;
       });
@@ -519,15 +522,49 @@ function Admintable() {
     setStartDate("");
   };
 
+  // Bulk attendance handler
+  const handleBulkUpload = async (e) => {
+    e.preventDefault();
+    if (!bulkFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", bulkFile);
+
+    try {
+      const response = await axios.post("https://back-ajnk.onrender.com/attendance/bulk-upload", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        alert("Bulk attendance uploaded successfully!");
+        fetchAttendanceData();
+        setBulkFile(null);
+      }
+    } catch (err) {
+      console.error("Error uploading bulk attendance:", err);
+      alert("Failed to upload bulk attendance. Please try again.");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    setBulkFile(e.target.files[0]);
+  };
+
   // Edit handlers
   const handleEdit = (record) => {
     setEditingId(record._id);
     setEditForm({
-      date: new Date(record.date).toISOString().split('T')[0],
+      date: new Date(record.date).toISOString().split("T")[0],
       day: record.day,
       IN: record.IN || "",
       report: record.report || "",
-      verification: record.verification
+      verification: record.verification,
     });
   };
 
@@ -538,24 +575,23 @@ function Admintable() {
       day: "",
       IN: "",
       report: "",
-      verification: ""
+      verification: "",
     });
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEditForm(prev => ({
+    setEditForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
-    // Update day automatically when date changes
     if (name === "date") {
       const newDate = new Date(value);
       const day = newDate.toLocaleString("en-US", { weekday: "long" });
-      setEditForm(prev => ({
+      setEditForm((prev) => ({
         ...prev,
-        day: day
+        day: day,
       }));
     }
   };
@@ -570,7 +606,7 @@ function Admintable() {
           date: editForm.date,
           clockIn: editForm.IN,
           report: editForm.report,
-          verification: editForm.verification
+          verification: editForm.verification,
         },
         {
           headers: {
@@ -598,8 +634,8 @@ function Admintable() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        
-        setAttendanceData(prevData => 
+
+        setAttendanceData((prevData) =>
           prevData.filter((record) => record._id !== id)
         );
       } catch (error) {
@@ -621,8 +657,8 @@ function Admintable() {
           },
         }
       );
-      
-      setAttendanceData(prevData =>
+
+      setAttendanceData((prevData) =>
         prevData.map((record) =>
           record._id === id ? { ...record, verification: "verified" } : record
         )
@@ -665,6 +701,30 @@ function Admintable() {
           </Link>
         </div>
 
+        {/* Bulk Upload Section */}
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <h5 className="card-title mb-3">Bulk Attendance Upload</h5>
+            <form onSubmit={handleBulkUpload}>
+              <div className="row g-3 align-items-center">
+                <div className="col-md-8">
+                  <input
+                    type="file"
+                    className="form-control"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                <div className="col-md-4">
+                  <button type="submit" className="btn btn-primary">
+                    Upload
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
         {/* Filter Section */}
         <div className="card shadow-sm border-0 mb-4">
           <div className="card-body">
@@ -690,7 +750,7 @@ function Admintable() {
                 />
               </div>
               <div className="col-md-4 d-flex align-items-end">
-                <button 
+                <button
                   className="btn btn-outline-secondary"
                   onClick={clearFilters}
                 >
@@ -717,147 +777,73 @@ function Admintable() {
                     <th>Date</th>
                     <th>Day</th>
                     <th>Duration</th>
-                    <th>Verification Status</th>
                     <th>Report</th>
+                    <th>Verification</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredData.length > 0 ? (
-                    filteredData.map((record) => (
-                      <tr key={record._id}>
-                        <td>{record.name}</td>
-                        <td>
-                          {editingId === record._id ? (
-                            <input
-                              type="date"
-                              className="form-control form-control-sm"
-                              name="date"
-                              value={editForm.date}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            new Date(new Date(record.date).getTime() - (24 * 60 * 60 * 1000))
-                              .toLocaleDateString('en-IN')
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="day"
-                              value={editForm.day}
-                              onChange={handleInputChange}
-                              disabled
-                            />
-                          ) : (
-                            record.day
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="IN"
-                              value={editForm.IN}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            record.IN || "N/A"
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <select
-                              className="form-select form-select-sm"
-                              name="verification"
-                              value={editForm.verification}
-                              onChange={handleInputChange}
+                  {filteredData.map((record) => (
+                    <tr key={record._id}>
+                      <td>{record.name}</td>
+                      <td>{new Date(record.date).toLocaleDateString()}</td>
+                      <td>{record.day}</td>
+                      <td>{record.IN || "N/A"}</td>
+                      <td>{record.report || "No report"}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            record.verification === "verified"
+                              ? "bg-success"
+                              : "bg-warning"
+                          }`}
+                        >
+                          {record.verification}
+                        </span>
+                      </td>
+                      <td>
+                        {editingId === record._id ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm me-2"
+                              onClick={() => handleUpdate(record._id)}
                             >
-                              <option value="pending">Pending</option>
-                              <option value="verified">Verified</option>
-                            </select>
-                          ) : (
-                            <span
-                              className={`badge rounded-pill ${
-                                record.verification === "verified"
-                                  ? "bg-success"
-                                  : "bg-warning text-dark"
-                              }`}
+                              Save
+                            </button>
+                            <button
+                              className="btn btn-secondary btn-sm"
+                              onClick={handleCancelEdit}
                             >
-                              {record.verification}
-                            </span>
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <input
-                              type="text"
-                              className="form-control form-control-sm"
-                              name="report"
-                              value={editForm.report}
-                              onChange={handleInputChange}
-                            />
-                          ) : (
-                            record.report
-                          )}
-                        </td>
-                        <td>
-                          {editingId === record._id ? (
-                            <div className="btn-group btn-group-sm">
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              className="btn btn-outline-primary btn-sm me-2"
+                              onClick={() => handleEdit(record)}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              className="btn btn-outline-danger btn-sm me-2"
+                              onClick={() => handleDelete(record._id)}
+                            >
+                              Delete
+                            </button>
+                            {record.verification !== "verified" && (
                               <button
-                                className="btn btn-success"
-                                onClick={() => handleUpdate(record._id)}
+                                className="btn btn-outline-success btn-sm"
+                                onClick={() => handleVerify(record._id)}
                               >
-                                <i className="bi bi-check"></i> Save
+                                Verify
                               </button>
-                              <button
-                                className="btn btn-secondary"
-                                onClick={handleCancelEdit}
-                              >
-                                <i className="bi bi-x"></i> Cancel
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="btn-group btn-group-sm">
-                              <button
-                                className="btn btn-outline-primary"
-                                onClick={() => handleEdit(record)}
-                                title="Edit"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="btn btn-outline-danger"
-                                onClick={() => handleDelete(record._id)}
-                                title="Delete"
-                              >
-                                Delete
-                              </button>
-                              {record.verification === "pending" && (
-                                <button
-                                  className="btn btn-outline-success"
-                                  onClick={() => handleVerify(record._id)}
-                                  title="Verify"
-                                >
-                                  Verify
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center text-muted py-4">
-                        <i className="bi bi-inbox fs-4 d-block mb-2"></i>
-                        No matching records found.
+                            )}
+                          </>
+                        )}
                       </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
