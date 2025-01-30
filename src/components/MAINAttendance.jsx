@@ -155,50 +155,7 @@ function MAINAttendance() {
               <AttendanceHistory attendanceData={attendanceData} />
             </div>
           </div>
-          <div className="col-lg-4">
-            {/* Clock In/Out Buttons */}
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">Attendance Actions</h5>
-                <div className="d-grid gap-2">
-                  <button 
-                    className="btn btn-primary"
-                    onClick={() => handleClockAction("clockIn")}
-                  >
-                    Clock In
-                  </button>
-                  <button 
-                    className="btn btn-danger"
-                    onClick={() => handleClockAction("clockOut")}
-                  >
-                    Clock Out
-                  </button>
-                </div>
-                {lastAction && (
-                  <div className="mt-3 text-muted">
-                    <small>{lastAction}</small>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Status Display */}
-            <div className="card mt-4">
-              <div className="card-body">
-                <h5 className="card-title">Current Status</h5>
-                <p className="card-text">
-                  {attendanceData.length > 0 && !attendanceData[attendanceData.length - 1].clockOut
-                    ? "Currently Clocked In"
-                    : "Currently Clocked Out"}
-                </p>
-                <p className="card-text">
-                  <small className="text-muted">
-                    Adjusted time: {formatTimeString(getAdjustedDate())}
-                  </small>
-                </p>
-              </div>
-            </div>
-          </div>
+        
         </div>
       </main>
     </div>
