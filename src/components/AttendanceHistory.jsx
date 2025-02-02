@@ -432,6 +432,7 @@ const AttendanceForm = () => {
   });
   const [filterDate, setFilterDate] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [internData, setInternData] = useState([]);
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -499,6 +500,35 @@ const AttendanceForm = () => {
       setLoading(false);
     }
   };
+
+  const fetchInterndataData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        "https://back-ajnk.onrender.com/internDetails",
+        config
+      );
+      setInternData(response.data);
+      setError(null);
+    } catch (err) {
+      console.error("Error details:", {
+        status: err.response?.status,
+        data: err.response?.data,
+        headers: err.response?.headers,
+      });
+
+      if (err.response?.status === 401) {
+        setError("Your session has expired. Please login again.");
+        navigate("/login");
+      } else {
+        setError("Failed to fetch attendance data. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   const generateTimeOptions = () => {
     const options = [];

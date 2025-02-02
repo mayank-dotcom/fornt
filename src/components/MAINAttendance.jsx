@@ -146,8 +146,8 @@ function MAINAttendance() {
       <main className="container py-4">
         <div className="row g-4">
           <div className="col-lg-8">
-            <div className="row g-4">
-              <div className="col-md-6">
+            <div className="row g-2">
+              <div className="col-md-8">
                 <Profile />
               </div>
             </div>
