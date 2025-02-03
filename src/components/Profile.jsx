@@ -232,7 +232,7 @@ function Profile() {
     if (isNaN(months) || isNaN(dailyHours)) return 0;
     
     // Assuming 20 working days per month
-    const workingDaysPerMonth = 20;
+    const workingDaysPerMonth = 30;
     
     return months * workingDaysPerMonth * dailyHours;
   };
