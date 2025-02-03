@@ -187,7 +187,7 @@ function Profile() {
               </tbody>
             </table>
           ) : (
-            <p className="text-muted">No attendance records found.</p>
+            <p className="text-muted">Nothing found.</p>
           )}
 
           {/* Progress Bar Section */}
