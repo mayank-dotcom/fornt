@@ -29,7 +29,7 @@ function EditInternPopup({ names, id, onClose, onSave }) {
     const fetchInternData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8000/internDetails/${id}`,
+          `https://back-ajnk.onrender.com/internDetails/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -76,7 +76,7 @@ function EditInternPopup({ names, id, onClose, onSave }) {
     try {
       if (id) {
         // Update existing intern
-        await axios.put(`http://localhost:8000/updateIntern/${id}`, formData, {
+        await axios.put(`https://back-ajnk.onrender.com/updateIntern/${id}`, formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -84,7 +84,7 @@ function EditInternPopup({ names, id, onClose, onSave }) {
       } else {
         // Create new intern
         console.log("creating intern");
-        await axios.post("http://localhost:8000/createIntern", formData, {
+        await axios.post("https://back-ajnk.onrender.com/createIntern", formData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

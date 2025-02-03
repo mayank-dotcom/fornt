@@ -85,33 +85,6 @@ function Admintable() {
     }
   };
 
-  // const fetchInternData = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const response = await axios.get("http://localhost:8000/internDetails", {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  //     setInternData(response.data);
-  //     setError(null);
-  //   } catch (err) {
-  //     console.error("Error details:", {
-  //       status: err.response?.status,
-  //       data: err.response?.data,
-  //       headers: err.response?.headers,
-  //     });
-
-  //     if (err.response?.status === 401) {
-  //       setError("Your session has expired. Please login again.");
-  //       navigate("/login");
-  //     } else {
-  //       setError("Failed to fetch attendance data. Please try again later.");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   // Filter function
   const filterData = () => {
@@ -153,8 +126,7 @@ function Admintable() {
     formData.append("file", bulkFile);
 
     try {
-      // const response = await axios.post("https://back-ajnk.onrender.com/attendance/bulk-upload", formData, {
-      const response = await axios.post("http://localhost:8000/attendance/bulk-upload", formData, {
+      const response = await axios.post("https://back-ajnk.onrender.com/attendance/bulk-upload", formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
           "Content-Type": "multipart/form-data",
@@ -225,8 +197,7 @@ function Admintable() {
       serverDate.setTime(serverDate.getTime() + (5 * 60 * 60 * 1000) + (30 * 60 * 1000));
       
       const response = await axios.put(
-        // "https://back-ajnk.onrender.com/attendance/update",
-        "http://localhost:8000/attendance/update",
+        "https://back-ajnk.onrender.com/attendance/update",
         {
           id,
           date: serverDate.toISOString().split("T")[0],
@@ -255,8 +226,7 @@ function Admintable() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this record?")) {
       try {
-        // await axios.delete(`https://back-ajnk.onrender.com/delete-record/${id}`, {
-        await axios.delete(`http://localhost:8000/delete-record/${id}`, {
+        await axios.delete(`https://back-ajnk.onrender.com/delete-record/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -275,8 +245,7 @@ function Admintable() {
   const handleVerify = async (id) => {
     try {
       await axios.put(
-        // "https://back-ajnk.onrender.com/attendance/update",
-        "http://localhost:8000/attendance/update",
+        "https://back-ajnk.onrender.com/attendance/update",
         { id, verification: "verified" },
         {
           headers: {
@@ -296,54 +265,6 @@ function Admintable() {
     }
   };
 
-  // const [selectedIntern, setSelectedIntern] = useState(null);
-  // const [uniqueInterns, setUniqueInterns] = useState([]);
-
-  // const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  // const openEditPopup = (name) => {
-  //   setSelectedIntern(name);
-  //   setIsPopupOpen(true);
-  // };
-
-  // const closeEditPopup = () => {
-  //   setIsPopupOpen(false);
-  // };
-
-  // const handleInternSave = () => {
-  //   // Refetch data after saving changes
-  //   fetchInternData();
-  //   closeEditPopup();
-  // };
-
-  // // Fetch unique intern names on component mount
-  // useEffect(() => {
-  //   const fetchUniqueInterns = async () => {
-  //     try {
-  //       console.log("got into try, sending request to get data")
-  //       // const response = await axios.get("https://back-ajnk.onrender.com/attendance", {
-  //       const response = await axios.get("http://localhost:8000/internDetails", {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       });
-  //       console.log("got the response")
-  //       const names = Array.from(new Set(response.data.map((intern) => intern.name)));
-  //       names.sort();
-  //       setUniqueInterns(names);
-  //     } catch (err) {
-  //       console.error("Error fetching unique interns:", err);
-  //     }
-  //   };
-
-  //   fetchUniqueInterns();
-  // }, []);
-
-  // const handleInternSelection = (name) => {
-  //   setSelectedIntern(name);
-  //   // Open popup with the selected intern's details
-  //   openEditPopup(name);
-  // };
 
 
   const [internData, setInternData] = useState([]);
@@ -356,7 +277,7 @@ function Admintable() {
 
   const fetchInternData = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/internDetails", {
+      const response = await axios.get("https://back-ajnk.onrender.com/internDetails", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

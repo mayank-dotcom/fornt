@@ -66,7 +66,7 @@ function Profile() {
   const fetchInternDetails = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/interninfo/${username}`,
+        `https://back-ajnk.onrender.com/interninfo/${username}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
